@@ -1,0 +1,35 @@
+{
+    "name": "com.madstark.runtimeconsole",
+    "displayName": "Runtime Console",
+    "version": "0.0.1",
+    "unity": "2019.3",
+    "description": "Runtime console that helps debugging stuff and allows to easily add commands.",
+    "keywords": [
+        "command",
+        "console",
+        "debug",
+        "dev",
+        "tool"
+    ],
+    "samples": [
+        {
+          "displayName": "Default Skin",
+          "description": "A clean and simple look for the console.",
+          "path": "Skins~/Default Skin"
+        }
+    ],
+    "dependencies": {},
+    "author": {
+        "name": "MadStark",
+        "url": "https://twitter.com/MadreDeDios77"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MadStark/com.MadStark.UnityRuntimeConsole.git"
+    },
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/MadStark/com.MadStark.UnityRuntimeConsole/issues"
+    },
+    "homepage": "https://github.com/MadStark/com.MadStark.UnityRuntimeConsole#readme"
+}
