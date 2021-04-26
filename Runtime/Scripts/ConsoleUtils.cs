@@ -6,7 +6,20 @@ namespace MadStark.RuntimeConsole
 {
     public static class ConsoleUtils
     {
-        public static ConsoleCommandDelegate CreateDelegateForMethodInfo(MethodInfo method) => delegate(string[] args) { method.Invoke(null, BindingFlags.Static, null, new object[] {args}, CultureInfo.CurrentCulture); };
+        public static ConsoleCommandDelegate CreateDelegateForMethodInfo(MethodInfo method)
+        {
+            return delegate(string[] args) {
+                ParameterInfo[] parameters = method.GetParameters();
+                if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string[]))
+                {
+                    method.Invoke(null, BindingFlags.Static, null, new object[] {args}, CultureInfo.CurrentCulture);
+                }
+                else
+                {
+                    method.Invoke(null, BindingFlags.Static, null, null, CultureInfo.CurrentCulture);
+                }
+            };
+        }
 
         internal static string[] CommandLineToArgsArray(string command)
         {

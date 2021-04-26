@@ -42,9 +42,15 @@ namespace MadStark.RuntimeConsole
         private readonly List<TMP_Text> logs = new List<TMP_Text>(50);
 
 
+        [RuntimeInitializeOnLoadMethod]
+        private static void RegisterCommands()
+        {
+            Console.RegisterCommandsInType(typeof(ConsoleBehaviour));
+        }
+
         private void Awake()
         {
-            Console.onLog += ConsoleOnLog;
+            Console.onLog += HandleConsoleOnLog;
             Instance = this;
         }
 
@@ -52,13 +58,6 @@ namespace MadStark.RuntimeConsole
         {
             if (hideOnStart)
                 Hide();
-        }
-
-        private void ConsoleOnLog(DateTimeOffset time, string message, MessageSeverity severity)
-        {
-            TMP_Text text = CreateOrReuseLogText();
-            ConfigureLogTextColor(text, severity);
-            text.text = $"[{time:T}]: {message}";
         }
 
         private void OnEnable()
@@ -69,6 +68,18 @@ namespace MadStark.RuntimeConsole
         private void OnDisable()
         {
             inputField.onSubmit.RemoveListener(InputFieldOnSubmit);
+        }
+
+        private void OnDestroy()
+        {
+            Console.onLog -= HandleConsoleOnLog;
+        }
+
+        private void HandleConsoleOnLog(DateTimeOffset time, string message, MessageSeverity severity)
+        {
+            TMP_Text text = CreateOrReuseLogText();
+            ConfigureLogTextColor(text, severity);
+            text.text = $"[{time:T}]: {message}";
         }
 
         [ContextMenu("Show")]
@@ -144,7 +155,7 @@ namespace MadStark.RuntimeConsole
         }
 
         [ConsoleCommand("clear")]
-        private static void ClearCommand(string[] _)
+        private static void ClearCommand()
         {
             if (Instance == null)
                 return;
