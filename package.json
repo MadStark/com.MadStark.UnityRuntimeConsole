@@ -18,7 +18,9 @@
           "path": "Skins~/Default Skin"
         }
     ],
-    "dependencies": {},
+    "dependencies": {
+        "com.unity.textmeshpro": "3.0.6"
+    },
     "author": {
         "name": "MadStark",
         "url": "https://twitter.com/MadreDeDios77"
