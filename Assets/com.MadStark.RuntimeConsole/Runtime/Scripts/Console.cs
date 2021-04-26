@@ -9,7 +9,8 @@ namespace MadStark.RuntimeConsole
 {
     public static class Console
     {
-        public const char kCommandPrefix = '/';
+        internal const char kCommandPrefix = '/';
+        internal const BindingFlags kCommandMethodBinding = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
         private static readonly Dictionary<string, ConsoleCommandDelegate> commands;
         public static IEnumerator<KeyValuePair<string, ConsoleCommandDelegate>> Commands => commands.GetEnumerator();
@@ -20,6 +21,7 @@ namespace MadStark.RuntimeConsole
         static Console()
         {
             commands = new Dictionary<string, ConsoleCommandDelegate>(50);
+            RegisterCommandsInType(typeof(BuiltinCommands));
         }
 
 
@@ -27,15 +29,14 @@ namespace MadStark.RuntimeConsole
 
         public static void RegisterCommandsInAssembly(Assembly assembly)
         {
-            IEnumerable<MethodInfo> query = assembly.GetTypes().SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+            IEnumerable<MethodInfo> query = assembly.GetTypes().SelectMany(t => t.GetMethods(kCommandMethodBinding));
+            RegisterCommandsInMethods(query);
+        }
 
-            foreach (MethodInfo methodInfo in query)
-            {
-                foreach (ConsoleCommandAttribute consoleCommandAttribute in methodInfo.GetCustomAttributes<ConsoleCommandAttribute>(false))
-                {
-                    SetCommand(consoleCommandAttribute.name, ConsoleUtils.CreateDelegateForMethodInfo(methodInfo));
-                }
-            }
+        public static void RegisterCommandsInType(Type type)
+        {
+            IEnumerable<MethodInfo> query = type.GetMethods(kCommandMethodBinding);
+            RegisterCommandsInMethods(query);
         }
 
         public static void SetCommand(string name, ConsoleCommandDelegate callback)
@@ -47,6 +48,17 @@ namespace MadStark.RuntimeConsole
         {
             if (commands.ContainsKey(name))
                 commands.Remove(name);
+        }
+
+        private static void RegisterCommandsInMethods(IEnumerable<MethodInfo> methodInfos)
+        {
+            foreach (MethodInfo methodInfo in methodInfos)
+            {
+                foreach (ConsoleCommandAttribute consoleCommandAttribute in methodInfo.GetCustomAttributes<ConsoleCommandAttribute>(false))
+                {
+                    SetCommand(consoleCommandAttribute.name, ConsoleUtils.CreateDelegateForMethodInfo(methodInfo));
+                }
+            }
         }
 
         #endregion

@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class TestSpawner : MonoBehaviour
 {
+    [RuntimeInitializeOnLoadMethod]
+    private static void RegisterCommands()
+    {
+        Console.RegisterCommandsInType(typeof(TestSpawner));
+    }
+
     [ConsoleCommand("spawn")]
     private static void SpawnFromCommand(string[] args)
     {
